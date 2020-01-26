@@ -4,8 +4,8 @@ class ApplicationController < ActionController::Base
   helper_method :current_user
 
   # Define the current_user method same as Devise current_user method
-  # Look up the current user based on user_id in the session cookie
+  # Look up the current user based on user_id in the cookie
   def current_user
-    @current_user ||= User.find(session[:user_id]) if session[:user_id]
+    @current_user ||= User.find(cookies.signed[:user_id]) if cookies.signed[:user_id]
   end
 end

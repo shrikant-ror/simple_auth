@@ -10,9 +10,12 @@ class SessionsController < ApplicationController
 
     # check user exists and email / password combination is correct.
     if user && user.authenticate(params[:login][:password])
-      # Store user_id of logged in user into session.
-      session[:user_id] = user.id.to_s
-      redirect_to root_path, notice: 'Successfully logged in!!!'
+      if params[:remember_me]
+        cookies.signed[:user_id] = { value: user.id, expires: 2.weeks.from_now }
+      else
+        cookies.signed[:user_id] = user.id
+      end
+      redirect_to home_path, notice: 'Successfully logged in!!!'
     else
       # if email / password combination is incorrect then render to login page
       flash.now.alert = "Incorrect email or password, try again."
@@ -22,7 +25,7 @@ class SessionsController < ApplicationController
 
   def destroy
     # delete the saved user_id from the cookie:
-    session.delete(:user_id)
+    cookies.delete :user_id
     redirect_to login_path, notice: 'Successfully logged out!!!'
   end
 end
