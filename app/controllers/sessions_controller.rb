@@ -11,9 +11,9 @@ class SessionsController < ApplicationController
     # check user exists and email / password combination is correct.
     if user && user.authenticate(params[:login][:password])
       if params[:remember_me]
-        cookies.signed[:user_id] = { value: user.id, expires: 2.weeks.from_now }
+        cookies.permanent[:auth_token] = { value: user.auth_token, expires: 2.weeks.from_now }
       else
-        cookies.signed[:user_id] = user.id
+        cookies[:auth_token] = user.auth_token
       end
       redirect_to home_path, notice: 'Successfully logged in!!!'
     else
@@ -25,7 +25,7 @@ class SessionsController < ApplicationController
 
   def destroy
     # delete the saved user_id from the cookie:
-    cookies.delete :user_id
+    cookies.delete(:auth_token)
     redirect_to login_path, notice: 'Successfully logged out!!!'
   end
 end
